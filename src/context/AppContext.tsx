@@ -10,6 +10,7 @@ interface AppContextType {
   registrations: Registration[];
   groups: Group[];
   addEvent: (e: ProgramEvent) => void;
+  updateEvent: (id: string, updatedEvent: Partial<ProgramEvent>) => void;
   registerForEvent: (eventId: string, groupId?: string, groupName?: string) => { success: boolean; message: string };
   myRegistrations: Registration[];
 }
@@ -23,6 +24,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [groups, setGroups] = useState<Group[]>(initialGroups);
 
   const addEvent = (e: ProgramEvent) => setEvents([...events, e]);
+
+  const updateEvent = (id: string, updatedEvent: Partial<ProgramEvent>) => {
+    setEvents(events.map(event => event.id === id ? { ...event, ...updatedEvent } : event));
+  };
 
   const myRegistrations = registrations.filter(r => r.studentId === user?.uid);
 
@@ -77,7 +82,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ events, registrations, groups, addEvent, registerForEvent, myRegistrations }}>
+    <AppContext.Provider value={{ events, registrations, groups, addEvent, updateEvent, registerForEvent, myRegistrations }}>
       {children}
     </AppContext.Provider>
   );

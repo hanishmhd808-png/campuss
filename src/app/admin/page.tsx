@@ -2,19 +2,22 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
+import { useToast } from "@/context/ToastContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProgramEvent, Category, EventType } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Users, LayoutList, UserCircle2, ArrowLeft } from "lucide-react";
+import { Plus, Users, LayoutList, UserCircle2, ArrowLeft, Edit2 } from "lucide-react";
 
 export default function AdminDashboard() {
   const { user, role, loading, logout } = useAuth();
-  const { events, addEvent, registrations, groups } = useApp();
+  const { events, addEvent, updateEvent, registrations, groups } = useApp();
+  const { showToast } = useToast();
   const router = useRouter();
 
-  const [isCreating, setIsCreating] = useState(false);
-  const [newEvent, setNewEvent] = useState<Partial<ProgramEvent>>({
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Partial<ProgramEvent>>({
     category: "Arts",
     type: "Individual",
     date: new Date().toISOString().split("T")[0]
@@ -28,20 +31,44 @@ export default function AdminDashboard() {
 
   if (loading || !user) return <div className="text-center mt-20">Loading...</div>;
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newEvent.title || !newEvent.description || !newEvent.date) return;
-    
-    addEvent({
-      id: `e${Date.now()}`,
-      title: newEvent.title,
-      category: newEvent.category as Category,
-      type: newEvent.type as EventType,
-      date: newEvent.date,
-      description: newEvent.description
+  const openCreateModal = () => {
+    setEditingEventId(null);
+    setFormData({
+      category: "Arts",
+      type: "Individual",
+      date: new Date().toISOString().split("T")[0],
+      title: "",
+      description: ""
     });
-    setIsCreating(false);
-    setNewEvent({ category: "Arts", type: "Individual", date: new Date().toISOString().split("T")[0] });
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (event: ProgramEvent) => {
+    setEditingEventId(event.id);
+    setFormData({ ...event });
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.title || !formData.description || !formData.date) return;
+    
+    if (editingEventId) {
+      updateEvent(editingEventId, formData);
+      showToast("Program updated successfully!", "success");
+    } else {
+      addEvent({
+        id: `e${Date.now()}`,
+        title: formData.title,
+        category: formData.category as Category,
+        type: formData.type as EventType,
+        date: formData.date,
+        description: formData.description
+      });
+      showToast("Program created successfully!", "success");
+    }
+    
+    setIsModalOpen(false);
   };
 
   return (
@@ -59,7 +86,7 @@ export default function AdminDashboard() {
           <p className="text-slate-500 mt-1">Secure monitoring view for student participation.</p>
         </div>
         <button 
-          onClick={() => setIsCreating(true)}
+          onClick={openCreateModal}
           className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
         >
           <Plus className="w-5 h-5" /> Add Event
@@ -81,8 +108,18 @@ export default function AdminDashboard() {
               <div key={event.id} className="p-6 hover:bg-slate-50 transition-colors">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">{event.title}</h3>
-                    <p className="text-sm text-slate-500">{event.category} • {event.type} • {new Date(event.date).toLocaleDateString()}</p>
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-xl font-bold text-slate-900">{event.title}</h3>
+                      <button 
+                        onClick={() => openEditModal(event)}
+                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
+                        title="Edit Program"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <p className="text-sm text-slate-500 mt-1">{event.category} • {event.type} • {new Date(event.date).toLocaleDateString()}</p>
+                    <p className="text-sm text-slate-600 mt-2">{event.description}</p>
                   </div>
                   <div className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-sm font-semibold flex items-center gap-2">
                     <Users className="w-4 h-4" /> 
@@ -92,7 +129,7 @@ export default function AdminDashboard() {
                 
                 {/* Display students directly */}
                 {eventRegs.length > 0 && event.type === "Individual" && (
-                  <div className="bg-slate-100/50 p-4 rounded-xl text-sm mt-2 border border-slate-100">
+                  <div className="bg-slate-100/50 p-4 rounded-xl text-sm mt-4 border border-slate-100">
                     <span className="font-semibold text-slate-700 block mb-3">Registered Students:</span>
                     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {eventRegs.map(r => (
@@ -111,10 +148,9 @@ export default function AdminDashboard() {
 
                 {/* Display groups and their members */}
                 {eventGroups.length > 0 && event.type === "Group" && (
-                  <div className="space-y-4 mt-4">
+                  <div className="space-y-4 mt-5">
                     <span className="font-semibold text-slate-700 block">Registered Groups:</span>
                     {eventGroups.map(g => {
-                      // Find all registrations for this group
                         const groupRegs = eventRegs.filter(r => r.groupId === g.id);
                         return (
                           <div key={g.id} className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
@@ -148,9 +184,9 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Create Event Modal */}
+      {/* Create / Edit Event Modal */}
       <AnimatePresence>
-        {isCreating && (
+        {isModalOpen && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -158,18 +194,18 @@ export default function AdminDashboard() {
               exit={{ scale: 0.95, opacity: 0 }}
               className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto"
             >
-              <h3 className="text-2xl font-bold mb-6">Create New Program</h3>
+              <h3 className="text-2xl font-bold mb-6">{editingEventId ? "Edit Program" : "Create New Program"}</h3>
               
-              <form onSubmit={handleCreate} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
-                  <input required type="text" className="w-full border border-slate-200 rounded-xl px-4 py-3" value={newEvent.title || ""} onChange={e => setNewEvent({...newEvent, title: e.target.value})} />
+                  <input required type="text" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.title || ""} onChange={e => setFormData({...formData, title: e.target.value})} />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                    <select className="w-full border border-slate-200 rounded-xl px-4 py-3" value={newEvent.category} onChange={e => setNewEvent({...newEvent, category: e.target.value as Category})}>
+                    <select className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value as Category})}>
                       <option value="Arts">Arts</option>
                       <option value="Sports">Sports</option>
                       <option value="Onam">Onam</option>
@@ -177,7 +213,7 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
-                    <select className="w-full border border-slate-200 rounded-xl px-4 py-3" value={newEvent.type} onChange={e => setNewEvent({...newEvent, type: e.target.value as EventType})}>
+                    <select className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value as EventType})}>
                       <option value="Individual">Individual</option>
                       <option value="Group">Group</option>
                     </select>
@@ -186,17 +222,17 @@ export default function AdminDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
-                  <input required type="date" className="w-full border border-slate-200 rounded-xl px-4 py-3" value={newEvent.date} onChange={e => setNewEvent({...newEvent, date: e.target.value})} />
+                  <input required type="date" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                  <textarea required className="w-full border border-slate-200 rounded-xl px-4 py-3 h-24" value={newEvent.description || ""} onChange={e => setNewEvent({...newEvent, description: e.target.value})}></textarea>
+                  <textarea required className="w-full border border-slate-200 rounded-xl px-4 py-3 h-24 focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.description || ""} onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
                 </div>
 
                 <div className="flex gap-3 mt-8 pt-4">
-                  <button type="button" onClick={() => setIsCreating(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200">Cancel</button>
-                  <button type="submit" className="flex-1 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700">Create Event</button>
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200">Cancel</button>
+                  <button type="submit" className="flex-1 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700">{editingEventId ? "Save Changes" : "Create Event"}</button>
                 </div>
               </form>
             </motion.div>
