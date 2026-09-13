@@ -8,9 +8,10 @@ import { useEffect, useState } from "react";
 import { ProgramEvent, Category, EventType } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Users, LayoutList, UserCircle2, ArrowLeft, Edit2 } from "lucide-react";
+import TeacherSetupModal from "@/components/TeacherSetupModal";
 
 export default function AdminDashboard() {
-  const { user, role, loading, logout } = useAuth();
+  const { user, role, loading, teacherProfile, logout } = useAuth();
   const { events, addEvent, updateEvent, registrations, groups } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
@@ -72,7 +73,9 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      <TeacherSetupModal />
+
       <button 
         onClick={logout}
         className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-medium w-fit"
@@ -83,10 +86,17 @@ export default function AdminDashboard() {
       <header className="flex justify-between items-end border-b border-slate-200 pb-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Teacher Dashboard</h1>
-          <p className="text-slate-500 mt-1">Secure monitoring view for student participation.</p>
+          {teacherProfile ? (
+            <p className="text-slate-500 mt-1">Welcome, <span className="font-semibold text-slate-700">{teacherProfile.name}</span></p>
+          ) : (
+            <p className="text-slate-500 mt-1">Secure monitoring view for student participation.</p>
+          )}
         </div>
         <button 
-          onClick={openCreateModal}
+          onClick={() => {
+            if (!teacherProfile) showToast("Please complete your profile first!", "error");
+            else openCreateModal();
+          }}
           className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
         >
           <Plus className="w-5 h-5" /> Add Event
@@ -111,7 +121,10 @@ export default function AdminDashboard() {
                     <div className="flex items-center gap-3">
                       <h3 className="text-xl font-bold text-slate-900">{event.title}</h3>
                       <button 
-                        onClick={() => openEditModal(event)}
+                        onClick={() => {
+                          if (!teacherProfile) showToast("Please complete your profile first!", "error");
+                          else openEditModal(event);
+                        }}
                         className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
                         title="Edit Program"
                       >

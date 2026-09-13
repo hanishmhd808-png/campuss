@@ -18,6 +18,12 @@ export interface StudentProfile {
   role: "student";
 }
 
+export interface TeacherProfile {
+  uid: string;
+  name: string;
+  role: "teacher";
+}
+
 export interface Registration {
   id: string;
   eventId: string;
