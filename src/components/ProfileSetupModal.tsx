@@ -4,9 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
+import { ArrowLeft } from "lucide-react";
 
 export default function ProfileSetupModal() {
-  const { user, role, studentProfile, updateStudentProfile } = useAuth();
+  const { user, role, studentProfile, updateStudentProfile, logout } = useAuth();
   const { showToast } = useToast();
   
   const [name, setName] = useState(user?.displayName || "");
@@ -31,9 +32,16 @@ export default function ProfileSetupModal() {
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
+          className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
         >
-          <h3 className="text-2xl font-bold mb-2">Complete Your Profile</h3>
+          <button 
+            onClick={logout}
+            className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 flex items-center gap-1 text-sm font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+
+          <h3 className="text-2xl font-bold mb-2 pr-12">Complete Your Profile</h3>
           <p className="text-slate-600 mb-6">Please provide your details before registering for events.</p>
           
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -9,10 +9,10 @@ import { ProgramEvent, Group } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import NotificationPopup from "@/components/NotificationPopup";
 import ProfileSetupModal from "@/components/ProfileSetupModal";
-import { Calendar, Users, Trophy, Paintbrush, CheckCircle2 } from "lucide-react";
+import { Calendar, Trophy, Paintbrush, CheckCircle2, ArrowLeft } from "lucide-react";
 
 export default function StudentDashboard() {
-  const { user, role, loading, studentProfile } = useAuth();
+  const { user, role, loading, studentProfile, logout } = useAuth();
   const { events, myRegistrations, registerForEvent, groups } = useApp();
   const { showToast } = useToast();
   const router = useRouter();
@@ -66,9 +66,16 @@ export default function StudentDashboard() {
   }).length;
 
   return (
-    <div className="space-y-8 relative">
+    <div className="space-y-6 relative">
       <ProfileSetupModal />
       <NotificationPopup upcomingEvents={upcomingEvents} />
+
+      <button 
+        onClick={logout}
+        className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-medium w-fit"
+      >
+        <ArrowLeft className="w-4 h-4" /> Go Back
+      </button>
 
       <header className="flex justify-between items-end border-b border-slate-200 pb-4">
         <div>

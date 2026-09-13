@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProgramEvent, Category, EventType } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Users, LayoutList, UserCircle2 } from "lucide-react";
+import { Plus, Users, LayoutList, UserCircle2, ArrowLeft } from "lucide-react";
 
 export default function AdminDashboard() {
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, logout } = useAuth();
   const { events, addEvent, registrations, groups } = useApp();
   const router = useRouter();
 
@@ -45,7 +45,14 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      <button 
+        onClick={logout}
+        className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-medium w-fit"
+      >
+        <ArrowLeft className="w-4 h-4" /> Go Back
+      </button>
+
       <header className="flex justify-between items-end border-b border-slate-200 pb-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Teacher Dashboard</h1>
