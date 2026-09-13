@@ -16,7 +16,7 @@ export const initialEvents: ProgramEvent[] = [
   {
     id: "e2",
     title: "Tug of War",
-    category: "Onam",
+    category: "Festivals",
     type: "Group",
     date: "2026-09-20",
     description: "Traditional Vadamvali contest.",

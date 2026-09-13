@@ -1,4 +1,4 @@
-export type Category = "Arts" | "Sports" | "Onam";
+export type Category = "Arts" | "Sports" | "Festivals";
 export type EventType = "Individual" | "Group";
 
 export interface ProgramEvent {

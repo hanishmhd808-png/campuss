@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "CampusEvent",
-  description: "Monitor and register for Onam, Arts, and Sports programs.",
+  description: "Monitor and register for Festivals, Arts, and Sports programs.",
 };
 
 export default function RootLayout({

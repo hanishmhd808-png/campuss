@@ -208,7 +208,7 @@ export default function AdminDashboard() {
                     <select className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value as Category})}>
                       <option value="Arts">Arts</option>
                       <option value="Sports">Sports</option>
-                      <option value="Onam">Onam</option>
+                      <option value="Festivals">Festivals</option>
                     </select>
                   </div>
                   <div>

@@ -70,7 +70,7 @@ export default function Home() {
           Welcome to <span className="text-indigo-600">CampusEvent</span>
         </h1>
         <p className="text-xl text-slate-600 mb-12 max-w-2xl mx-auto">
-          The all-in-one platform for monitoring and registering for Onam, Arts, and Sports programs.
+          The all-in-one platform for monitoring and registering for Festivals, Arts, and Sports programs.
         </p>
         
         <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 max-w-md mx-auto mb-8">
