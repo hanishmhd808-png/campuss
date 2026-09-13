@@ -1,17 +1,18 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { ProgramEvent, Registration, Group } from "@/types";
-import { initialEvents, initialRegistrations, initialGroups } from "@/lib/mockData";
 import { useAuth } from "./AuthContext";
+import { db } from "../lib/firebase";
+import { collection, doc, setDoc, updateDoc, onSnapshot, query } from "firebase/firestore";
 
 interface AppContextType {
   events: ProgramEvent[];
   registrations: Registration[];
   groups: Group[];
-  addEvent: (e: ProgramEvent) => void;
-  updateEvent: (id: string, updatedEvent: Partial<ProgramEvent>) => void;
-  registerForEvent: (eventId: string, groupId?: string, groupName?: string) => { success: boolean; message: string };
+  addEvent: (e: ProgramEvent) => Promise<void>;
+  updateEvent: (id: string, updatedEvent: Partial<ProgramEvent>) => Promise<void>;
+  registerForEvent: (eventId: string, groupId?: string, groupName?: string) => Promise<{ success: boolean; message: string }>;
   myRegistrations: Registration[];
 }
 
@@ -19,21 +20,59 @@ const AppContext = createContext<AppContextType | null>(null);
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const { user, studentProfile } = useAuth();
-  const [events, setEvents] = useState<ProgramEvent[]>(initialEvents);
-  const [registrations, setRegistrations] = useState<Registration[]>(initialRegistrations);
-  const [groups, setGroups] = useState<Group[]>(initialGroups);
+  const [events, setEvents] = useState<ProgramEvent[]>([]);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
 
-  const addEvent = (e: ProgramEvent) => setEvents([...events, e]);
+  useEffect(() => {
+    if (!db) return;
+    
+    // Listen to Events
+    const unsubEvents = onSnapshot(collection(db, "events"), (snapshot) => {
+      setEvents(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as ProgramEvent)));
+    });
 
-  const updateEvent = (id: string, updatedEvent: Partial<ProgramEvent>) => {
-    setEvents(events.map(event => event.id === id ? { ...event, ...updatedEvent } : event));
+    // Listen to Registrations
+    const unsubRegs = onSnapshot(collection(db, "registrations"), (snapshot) => {
+      setRegistrations(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Registration)));
+    });
+
+    // Listen to Groups
+    const unsubGroups = onSnapshot(collection(db, "groups"), (snapshot) => {
+      setGroups(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Group)));
+    });
+
+    return () => {
+      unsubEvents();
+      unsubRegs();
+      unsubGroups();
+    };
+  }, []);
+
+  const addEvent = async (e: ProgramEvent) => {
+    if (!db) return;
+    try {
+      await setDoc(doc(db, "events", e.id), e);
+    } catch (error) {
+      console.error("Error adding event:", error);
+    }
+  };
+
+  const updateEvent = async (id: string, updatedEvent: Partial<ProgramEvent>) => {
+    if (!db) return;
+    try {
+      await updateDoc(doc(db, "events", id), updatedEvent);
+    } catch (error) {
+      console.error("Error updating event:", error);
+    }
   };
 
   const myRegistrations = registrations.filter(r => r.studentId === user?.uid);
 
-  const registerForEvent = (eventId: string, groupId?: string, groupName?: string) => {
+  const registerForEvent = async (eventId: string, groupId?: string, groupName?: string) => {
     if (!user) return { success: false, message: "Not logged in" };
     if (!studentProfile) return { success: false, message: "Please complete your profile first." };
+    if (!db) return { success: false, message: "Database not connected" };
     
     const event = events.find(e => e.id === eventId);
     if (!event) return { success: false, message: "Event not found" };
@@ -54,31 +93,43 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     let finalGroupId = groupId;
-    if (event.type === "Group" && !groupId && groupName) {
-      const newGroup: Group = {
-        id: `g${Date.now()}`,
+    try {
+      if (event.type === "Group" && !groupId && groupName) {
+        const newGroupId = `g${Date.now()}`;
+        const newGroup: Group = {
+          id: newGroupId,
+          eventId,
+          name: groupName,
+          members: [user.uid]
+        };
+        await setDoc(doc(db, "groups", newGroupId), newGroup);
+        finalGroupId = newGroupId;
+      } else if (event.type === "Group" && groupId) {
+        const targetGroup = groups.find(g => g.id === groupId);
+        if (targetGroup) {
+          await updateDoc(doc(db, "groups", groupId), {
+            members: [...targetGroup.members, user.uid]
+          });
+        }
+      }
+
+      const newRegId = `r${Date.now()}`;
+      const newReg: Registration = {
+        id: newRegId,
         eventId,
-        name: groupName,
-        members: [user.uid]
+        studentId: user.uid,
+        studentName: studentProfile.name,
+        registerNumber: studentProfile.registerNumber,
+        className: studentProfile.className,
+        groupId: finalGroupId
       };
-      setGroups([...groups, newGroup]);
-      finalGroupId = newGroup.id;
-    } else if (event.type === "Group" && groupId) {
-      setGroups(groups.map(g => g.id === groupId ? { ...g, members: [...g.members, user.uid] } : g));
+
+      await setDoc(doc(db, "registrations", newRegId), newReg);
+      return { success: true, message: "Successfully registered!" };
+    } catch (error) {
+      console.error("Registration error:", error);
+      return { success: false, message: "Registration failed due to a database error." };
     }
-
-    const newReg: Registration = {
-      id: `r${Date.now()}`,
-      eventId,
-      studentId: user.uid,
-      studentName: studentProfile.name,
-      registerNumber: studentProfile.registerNumber,
-      className: studentProfile.className,
-      groupId: finalGroupId
-    };
-
-    setRegistrations([...registrations, newReg]);
-    return { success: true, message: "Successfully registered!" };
   };
 
   return (
