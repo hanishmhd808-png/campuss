@@ -39,30 +39,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(false);
 
   const loginAsMockStudent = () => {
-    setUser({ uid: "mock-student-123", email: "student@college.edu", displayName: "Mock Student" } as User);
+    setUser({ uid: "mock-student-123", email: "student@college.edu", displayName: "" } as User);
     setRole("student");
-    // Purposely leaving studentProfile null so they are forced to fill it out
   };
 
   const loginAsMockTeacher = () => {
-    setUser({ uid: "mock-teacher-456", email: "teacher@college.edu", displayName: "Mock Teacher" } as User);
+    setUser({ uid: "mock-teacher-456", email: "teacher@college.edu", displayName: "Teacher" } as User);
     setRole("teacher");
   };
 
   const loginWithGoogle = async () => {
+    // Only attempt real Firebase if auth was initialized with an API key
     if (auth && process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
       const provider = new GoogleAuthProvider();
       try {
         const result = await signInWithPopup(auth, provider);
         setUser(result.user);
-        setRole("student"); // Defaulting new Google logins to student for this demo
+        setRole("student"); 
       } catch (error) {
         console.error("Google Sign-in Error:", error);
-        alert("Google Sign-in failed. Please check console.");
+        alert("Google Sign-in failed. Please check your Firebase configuration or console logs.");
       }
     } else {
-      // Mock Google Login
-      setUser({ uid: "google-mock-" + Date.now(), email: "student@gmail.com", displayName: "Google Student" } as User);
+      // Mock Google Login when no Firebase config exists
+      setUser({ uid: "google-mock-" + Date.now(), email: "student@gmail.com", displayName: "" } as User);
       setRole("student");
     }
   };
