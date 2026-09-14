@@ -14,7 +14,6 @@ export default function Home() {
 
   const [showTeacherLock, setShowTeacherLock] = useState(false);
   const [passcode, setPasscode] = useState("");
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -23,7 +22,7 @@ export default function Home() {
     if (user && role === "teacher") router.push("/admin");
   }, [user, role, router]);
 
-  if (user) return <div className="min-h-[60vh] flex items-center justify-center">Redirecting...</div>;
+  if (user) return <div className="min-h-[60vh] flex items-center justify-center dark:text-slate-200">Redirecting...</div>;
 
   const handleGoogleLogin = async () => {
     await loginWithGoogle();
@@ -66,15 +65,15 @@ export default function Home() {
         <div className="flex justify-center mb-6">
           <Sparkles className="w-16 h-16 text-indigo-500" />
         </div>
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+        <h1 className="text-5xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">
           Welcome to <span className="text-indigo-600">CampusEvent</span>
         </h1>
-        <p className="text-xl text-slate-600 mb-12 max-w-2xl mx-auto">
+        <p className="text-xl text-slate-600 dark:text-slate-300 mb-12 max-w-2xl mx-auto">
           The all-in-one platform for monitoring and registering for Festivals, Arts, and Sports programs.
         </p>
         
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 max-w-md mx-auto mb-8">
-          <h2 className="text-2xl font-bold mb-6 text-slate-800">Student Login</h2>
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 max-w-md mx-auto mb-8 transition-colors">
+          <h2 className="text-2xl font-bold mb-6 text-slate-800 dark:text-white">Student Login</h2>
           
           <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
             <div className="relative">
@@ -84,7 +83,7 @@ export default function Home() {
               <input
                 type="email"
                 required
-                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                className="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-colors"
                 placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -97,7 +96,7 @@ export default function Home() {
               <input
                 type="password"
                 required
-                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                className="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-colors"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -112,16 +111,16 @@ export default function Home() {
           </form>
 
           <div className="relative flex py-2 items-center mb-6">
-            <div className="flex-grow border-t border-slate-200"></div>
+            <div className="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
             <span className="flex-shrink-0 mx-4 text-slate-400 text-sm">OR</span>
-            <div className="flex-grow border-t border-slate-200"></div>
+            <div className="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
           </div>
 
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-3 bg-white text-slate-700 border border-slate-200 px-8 py-3 w-full rounded-xl font-semibold shadow-sm hover:bg-slate-50 transition-all mb-4"
+            className="flex items-center justify-center gap-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-8 py-3 w-full rounded-xl font-semibold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all mb-4"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -136,16 +135,16 @@ export default function Home() {
         <div className="flex justify-center gap-4">
           <button
             onClick={loginAsMockStudent}
-            className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors font-medium text-sm"
+            className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium text-sm"
           >
             <UserCircle className="w-4 h-4" /> Guest Student
           </button>
           
-          <span className="text-slate-300">|</span>
+          <span className="text-slate-300 dark:text-slate-700">|</span>
 
           <button
             onClick={() => setShowTeacherLock(true)}
-            className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors font-medium text-sm"
+            className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium text-sm"
           >
             <ShieldCheck className="w-4 h-4" /> Teacher Access
           </button>
@@ -160,22 +159,22 @@ export default function Home() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
+              className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full shadow-2xl transition-colors border border-transparent dark:border-slate-800"
             >
               <div className="flex justify-center mb-4">
-                <div className="bg-indigo-100 p-4 rounded-full">
-                  <Lock className="w-8 h-8 text-indigo-600" />
+                <div className="bg-indigo-100 dark:bg-indigo-900/50 p-4 rounded-full">
+                  <Lock className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-center mb-2">Teacher Login</h3>
-              <p className="text-slate-500 text-center mb-6">Enter the administrative passcode to access the monitoring dashboard.</p>
+              <h3 className="text-2xl font-bold text-center mb-2 dark:text-white">Teacher Login</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-center mb-6">Enter the administrative passcode to access the monitoring dashboard.</p>
               
               <form onSubmit={handleTeacherLogin} className="space-y-4">
                 <div>
                   <input 
                     type="password" 
                     placeholder="Enter passcode" 
-                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-center text-lg tracking-widest focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" 
+                    className="w-full border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white rounded-xl px-4 py-3 text-center text-lg tracking-widest focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 outline-none transition-all" 
                     value={passcode} 
                     onChange={e => setPasscode(e.target.value)}
                     autoFocus
@@ -186,7 +185,7 @@ export default function Home() {
                   <button 
                     type="button" 
                     onClick={() => { setShowTeacherLock(false); setPasscode(""); }}
-                    className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
+                    className="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                   >
                     Cancel
                   </button>

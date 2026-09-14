@@ -23,11 +23,11 @@ export default function NotificationPopup({ upcomingEvents }: { upcomingEvents: 
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="fixed bottom-6 right-6 bg-white p-6 rounded-2xl shadow-2xl border border-slate-100 z-50 max-w-sm"
+          className="fixed bottom-6 right-6 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 z-50 max-w-sm"
         >
           <button 
             onClick={() => setIsOpen(false)}
-            className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"
+            className="absolute top-4 right-4 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:text-slate-200"
           >
             <X className="w-5 h-5" />
           </button>
@@ -37,13 +37,13 @@ export default function NotificationPopup({ upcomingEvents }: { upcomingEvents: 
             <h3 className="font-bold text-lg">Upcoming Events!</h3>
           </div>
           
-          <p className="text-slate-600 text-sm mb-4">
+          <p className="text-slate-600 dark:text-slate-300 text-sm mb-4">
             You have events coming up very soon. Get ready!
           </p>
           
           <ul className="space-y-2">
             {upcomingEvents.map(e => (
-              <li key={e.id} className="text-sm font-medium bg-slate-50 p-2 rounded-lg border border-slate-100">
+              <li key={e.id} className="text-sm font-medium bg-slate-50 dark:bg-slate-950 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
                 {e.title} - {new Date(e.date).toLocaleDateString()}
               </li>
             ))}

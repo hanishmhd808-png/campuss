@@ -28,50 +28,50 @@ export default function ProfileSetupModal() {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-slate-900/50 dark:bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+          className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
         >
           <button 
             onClick={logout}
-            className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 flex items-center gap-1 text-sm font-medium"
+            className="absolute top-6 right-6 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:text-slate-200 flex items-center gap-1 text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
 
           <h3 className="text-2xl font-bold mb-2 pr-12">Complete Your Profile</h3>
-          <p className="text-slate-600 mb-6">Please provide your details before registering for events.</p>
+          <p className="text-slate-600 dark:text-slate-300 mb-6">Please provide your details before registering for events.</p>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Full Name</label>
               <input 
                 required 
                 type="text" 
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none" 
+                className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none" 
                 value={name} 
                 onChange={e => setName(e.target.value)} 
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Register Number</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Register Number</label>
               <input 
                 required 
                 type="text" 
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none" 
+                className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none" 
                 value={regNo} 
                 onChange={e => setRegNo(e.target.value)} 
                 placeholder="e.g. S123456"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Class / Department Option</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Class / Department Option</label>
               <input 
                 required 
                 type="text" 
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none" 
+                className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none" 
                 value={className} 
                 onChange={e => setClassName(e.target.value)} 
                 placeholder="e.g. BSc Computer Science"

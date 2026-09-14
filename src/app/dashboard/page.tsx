@@ -72,26 +72,26 @@ export default function StudentDashboard() {
 
       <button 
         onClick={logout}
-        className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-medium w-fit"
+        className="flex items-center gap-2 text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:text-slate-100 transition-colors font-medium w-fit"
       >
         <ArrowLeft className="w-4 h-4" /> Go Back
       </button>
 
-      <header className="flex justify-between items-end border-b border-slate-200 pb-4">
+      <header className="flex justify-between items-end border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Student Dashboard</h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Student Dashboard</h1>
           {studentProfile ? (
-            <p className="text-slate-500 mt-1">
+            <p className="text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">
               Welcome, {studentProfile.name} • Reg: {studentProfile.registerNumber} • Class: {studentProfile.className}
             </p>
           ) : (
-            <p className="text-slate-500 mt-1">Discover and register for campus events.</p>
+            <p className="text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">Discover and register for campus events.</p>
           )}
         </div>
         <div className="text-right">
-          <p className="text-sm text-slate-500">Individual Events limits</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Individual Events limits</p>
           <div className="text-2xl font-bold text-indigo-600">
-            {individualCount} <span className="text-slate-400 text-lg font-normal">/ 3</span>
+            {individualCount} <span className="text-slate-400 dark:text-slate-500 text-lg font-normal">/ 3</span>
           </div>
         </div>
       </header>
@@ -104,27 +104,27 @@ export default function StudentDashboard() {
             <motion.div
               key={event.id}
               whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full"
+              className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col h-full"
             >
               <div className="flex justify-between items-start mb-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">
                   {getIcon(event.category)} {event.category}
                 </span>
-                <span className={`text-xs font-bold px-2 py-1 rounded ${event.type === "Group" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
+                <span className={`text-xs font-bold px-2 py-1 rounded ${event.type === "Group" ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300" : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"}`}>
                   {event.type}
                 </span>
               </div>
               
-              <h3 className="text-xl font-bold text-slate-900 mb-2">{event.title}</h3>
-              <p className="text-sm text-slate-600 mb-4 flex-grow">{event.description}</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{event.title}</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 flex-grow">{event.description}</p>
               
               <div className="mt-auto">
-                <p className="text-sm font-medium text-slate-500 mb-4 flex items-center gap-2">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
                   <Calendar className="w-4 h-4" /> {new Date(event.date).toLocaleDateString()}
                 </p>
                 
                 {isRegistered ? (
-                  <button disabled className="w-full py-2.5 bg-green-50 text-green-700 font-semibold rounded-xl flex items-center justify-center gap-2">
+                  <button disabled className="w-full py-2.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-semibold rounded-xl flex items-center justify-center gap-2">
                     <CheckCircle2 className="w-5 h-5" /> Registered
                   </button>
                 ) : (
@@ -133,7 +133,7 @@ export default function StudentDashboard() {
                       if (!studentProfile) showToast("Please complete your profile first!", "error");
                       else setSelectedEvent(event);
                     }}
-                    className="w-full py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white transition-colors font-semibold rounded-xl"
+                    className="w-full py-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 hover:bg-indigo-600 hover:text-white transition-colors font-semibold rounded-xl"
                   >
                     Register Now
                   </button>
@@ -146,33 +146,33 @@ export default function StudentDashboard() {
 
       <AnimatePresence>
         {selectedEvent && (
-          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-900/50 dark:bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
+              className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full shadow-2xl"
             >
               <h3 className="text-2xl font-bold mb-2">Register for {selectedEvent.title}</h3>
-              <p className="text-slate-600 mb-6">Confirm your participation below.</p>
+              <p className="text-slate-600 dark:text-slate-300 mb-6">Confirm your participation below.</p>
               
               {selectedEvent.type === "Group" && (
                 <div className="mb-6 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Create a new group</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Create a new group</label>
                     <input 
                       type="text" 
                       placeholder="Enter group name" 
-                      className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       value={groupName}
                       onChange={(e) => { setGroupName(e.target.value); setSelectedGroupId(""); }}
                     />
                   </div>
-                  <div className="text-center text-sm text-slate-400 font-medium">OR</div>
+                  <div className="text-center text-sm text-slate-400 dark:text-slate-500 font-medium">OR</div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Join existing group</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Join existing group</label>
                     <select
-                      className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       value={selectedGroupId}
                       onChange={(e) => { setSelectedGroupId(e.target.value); setGroupName(""); }}
                     >
@@ -188,7 +188,7 @@ export default function StudentDashboard() {
               <div className="flex gap-3 mt-8">
                 <button 
                   onClick={() => { setSelectedEvent(null); setGroupName(""); setSelectedGroupId(""); }}
-                  className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200"
+                  className="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 dark:bg-slate-700"
                 >
                   Cancel
                 </button>
